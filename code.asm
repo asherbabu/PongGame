@@ -1,0 +1,20 @@
+STACK SEGMENT PARA STACK
+    DB 64 DUP(' ')
+STACK ENDS
+
+DATA SEGMENT PARA 'DATA'
+
+DATA ENDS
+
+CODE SEGMENT PARA 'CODE'
+
+    MAIN PROC PAR
+        MOV DL, 'A'
+        MOV AB, 6h
+        INT 21h
+        
+        RET
+    MAIN ENDF
+
+CODE ENDS
+END
