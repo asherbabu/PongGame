@@ -3,18 +3,19 @@ STACK SEGMENT PARA STACK
 STACK ENDS
 
 DATA SEGMENT PARA 'DATA'
-
 DATA ENDS
 
 CODE SEGMENT PARA 'CODE'
 
-    MAIN PROC PAR
-        MOV DL, 'A'
-        MOV AB, 6h
-        INT 21h
+    MAIN PROC FAR
+    
+        MOV DL, 'A'   ; Move 'A' character into DL register
+        MOV AH, 6h     ; Set AH to 2 (function number for "print character")
+        INT 21h       ; Call DOS interrupt
         
-        RET
-    MAIN ENDF
+        RET           ; Return from procedure
+    MAIN ENDP
 
 CODE ENDS
 END
+
