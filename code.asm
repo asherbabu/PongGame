@@ -9,9 +9,9 @@ CODE SEGMENT PARA 'CODE'
 
     MAIN PROC FAR
     
-        MOV DL, 'A'   ; Move 'A' character into DL register
-        MOV AH, 6h     ; Set AH to 2 (function number for "print character")
-        INT 21h       ; Call DOS interrupt
+        MOV AH, 00h   ; set the configuration to video mode
+        MOV AL, 13h   ; choose videomode
+        INT 10h       ; execute the configuration
         
         RET           ; Return from procedure
     MAIN ENDP
