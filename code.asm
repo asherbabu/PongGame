@@ -6,6 +6,7 @@ DATA SEGMENT PARA 'DATA'
 
     BALL_X DW 0Ah     ; X position column of the ball
     BALL_Y DW 0Ah     ; Y position line of the ball
+    BALL_SIZE DW 04H  ; size of the ball (how many pixel the doe the ball have in width and height)
 
 DATA ENDS
 
@@ -37,13 +38,29 @@ CODE SEGMENT PARA 'CODE'
 
     DRAW_BALL PROC NEAR 
 
+        MOV CX, BALL_X   ; set the initial column (X)
+        MOV DX, BALL_Y   ; set the initial line (Y)
         
-        MOV AH, 0Ch   ; set the configuration to write a pixel
-        MOV AL, 0Fh   ; choose color
-        MOV BH, 00h   ; set the page number 
-        MOV CX, BALL_X   ; set the column (X)
-        MOV DX, BALL_Y   ; set the line (Y)
-        INT 10h       ; execute configuration
+        DRAW_BALL_HORIZONTAL:
+            MOV AH, 0Ch   ; set the configuration to write a pixel
+            MOV AL, 0Fh   ; choose color
+            MOV BH, 00h   ; set the page number 
+            INT 10h       ; execute configuration
+
+            INC CX        ; CX = CX + 1
+            MOV AX, CX    ; CX - BALL_X > BALL_SIZE (Y -> We go to the next line,N -> We continue to the next column
+            SUB AX, BALL_X
+            CMP AX, BALL_SIZE
+            JNG DRAW_BALL_HORIZONTAL
+
+            MOV CX, BALL_X  ; the CX register goes back to the initial column
+            INC DX          ; we advance one line
+
+            MOV AX, DX      ; DX - BALL_Y > BALL_SIZE (Y -> we exit this procedure , N -> we comntinue to the next line)
+            SUB AX, BALL_Y
+            CMP AX, BALL_SIZE
+            JNG DRAW_BALL_HORIZONTAL
+
         RET
     DRAW_BALL ENDP
 
