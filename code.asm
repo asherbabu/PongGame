@@ -30,15 +30,22 @@ CODE SEGMENT PARA 'CODE'
         MOV BL, 01h   ; choosing background color
         INT 10h       ; executing the configuration
 
+        CALL DRAW_BALL
+
+        RET           ; Return from procedure
+    MAIN ENDP
+
+    DRAW_BALL PROC NEAR 
+
+        
         MOV AH, 0Ch   ; set the configuration to write a pixel
         MOV AL, 0Fh   ; choose color
         MOV BH, 00h   ; set the page number 
         MOV CX, BALL_X   ; set the column (X)
         MOV DX, BALL_Y   ; set the line (Y)
         INT 10h       ; execute configuration
-
-        RET           ; Return from procedure
-    MAIN ENDP
+        RET
+    DRAW_BALL ENDP
 
 CODE ENDS
 END
