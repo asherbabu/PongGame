@@ -9,6 +9,8 @@ DATA SEGMENT PARA 'DATA'
     BALL_X DW 0Ah     ; X position column of the ball
     BALL_Y DW 0Ah     ; Y position line of the ball
     BALL_SIZE DW 04H  ; size of the ball (how many pixel the doe the ball have in width and height)
+    BALL_VELOCITY_X DW 05h     ; X (horizontal) velocity of the ball
+    BALL_VELOCITY_Y DW 02h     ; Y (vertical) velocity of the ball
 
 DATA ENDS
 
@@ -24,14 +26,7 @@ CODE SEGMENT PARA 'CODE'
     POP AX                                ; release the top item from the stack to the AX register
     POP AX                                ; release the top item from the stack to the AX register
     
-        MOV AH, 00h   ; set the configuration to video mode
-        MOV AL, 13h   ; choose videomode
-        INT 10h       ; execute the configuration
-
-        MOV AH, 0bh   ; set the configuration to the background color
-        MOV BH, 00h   ; to the background color
-        MOV BL, 01h   ; choosing background color
-        INT 10h       ; executing the configuration
+        CALL CLEAR_SCREEN
 
         CHECK_TIME:
             MOV AH, 2Ch   ; get the system time
@@ -42,13 +37,24 @@ CODE SEGMENT PARA 'CODE'
 
             ; if it is different then draw, move, etc 
             MOV TIME_AUX, DL    ; updating time
-            INC BALL_X
+
+            CALL CLEAR_SCREEN
+
+            CALL MOVE_BALL
+
             CALL DRAW_BALL
 
             JMP CHECK_TIME ; after everything, checks time again
 
         RET           ; Return from procedure
     MAIN ENDP
+
+    MOVE_BALL PROC NEAR
+        MOV AX, BALL_VELOCITY_X
+        ADD BALL_X, AX
+        MOV AX, BALL_VELOCITY_Y
+        ADD BALL_Y, AX
+    MOVE_BALL ENDP
 
     DRAW_BALL PROC NEAR 
 
@@ -77,6 +83,19 @@ CODE SEGMENT PARA 'CODE'
 
         RET
     DRAW_BALL ENDP
+
+    CLEAR_SCREEN PROC NEAR
+        MOV AH, 00h   ; set the configuration to video mode
+        MOV AL, 13h   ; choose videomode
+        INT 10h       ; execute the configuration
+
+        MOV AH, 0bh   ; set the configuration to the background color
+        MOV BH, 00h   ; to the background color
+        MOV BL, 01h   ; choosing background color
+        INT 10h       ; executing the configuration
+
+        RET
+    CLEAR_SCREEN ENDP
 
 CODE ENDS
 END
