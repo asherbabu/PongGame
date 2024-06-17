@@ -4,6 +4,8 @@ STACK ENDS
 
 DATA SEGMENT PARA 'DATA'
 
+    TIME_AUX DB 0     ; variable used when chech=king if the time has changed
+
     BALL_X DW 0Ah     ; X position column of the ball
     BALL_Y DW 0Ah     ; Y position line of the ball
     BALL_SIZE DW 04H  ; size of the ball (how many pixel the doe the ball have in width and height)
@@ -31,7 +33,19 @@ CODE SEGMENT PARA 'CODE'
         MOV BL, 01h   ; choosing background color
         INT 10h       ; executing the configuration
 
-        CALL DRAW_BALL
+        CHECK_TIME:
+            MOV AH, 2Ch   ; get the system time
+            INT 21h       ; CH = hour, CL = minute, DH = second DL = 1/100 seconds
+
+            CMP DL, TIME_AUX     ; is teh current time equal to the previous one(TIME_AUX)?
+            JE CHECK_TIME        ; if it is the same check agaiin
+
+            ; if it is different then draw, move, etc 
+            MOV TIME_AUX, DL    ; updating time
+            INC BALL_X
+            CALL DRAW_BALL
+
+            JMP CHECK_TIME ; after everything, checks time again
 
         RET           ; Return from procedure
     MAIN ENDP
