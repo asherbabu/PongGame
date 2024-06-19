@@ -10,8 +10,10 @@ DATA SEGMENT PARA 'DATA'
 
     TIME_AUX DB 0     ; variable used when chech=king if the time has changed
 
-    BALL_X DW 0Ah     ; X position column of the ball
-    BALL_Y DW 0Ah     ; Y position line of the ball
+    BALL_ORIGINAL_X DW 0A0h
+    BALL_ORIGINAL_Y DW 64h
+    BALL_X DW 0A0h     ; X position column of the ball
+    BALL_Y DW 64h     ; Y position line of the ball
     BALL_SIZE DW 04H  ; size of the ball (how many pixel the doe the ball have in width and height)
     BALL_VELOCITY_X DW 05h     ; X (horizontal) velocity of the ball
     BALL_VELOCITY_Y DW 02h     ; Y (vertical) velocity of the ball
@@ -59,12 +61,12 @@ CODE SEGMENT PARA 'CODE'
 
         MOV AX, WINDOW_BOUNDS
         CMP BALL_X, AX
-        JL NEG_VELOCITY_X           ; BALL_X < WINDOW_BOUNDS (Y -> collided)
+        JL RESET_POSITION           ; BALL_X < WINDOW_BOUNDS (Y -> collided)
         MOV AX, WINDOW_WIDTH
         SUB AX, BALL_SIZE
         SUB AX, WINDOW_BOUNDS
         CMP BALL_X, AX              ; BALL_X > WINDOW_WIDTH - BALL_SIZE - WINDOW_BOUNDS (Y -> collided)
-        JG NEG_VELOCITY_X
+        JG RESET_POSITION
 
         MOV AX, BALL_VELOCITY_Y
         ADD BALL_Y, AX              ; move the ball vertically
@@ -80,8 +82,8 @@ CODE SEGMENT PARA 'CODE'
 
         RET
 
-        NEG_VELOCITY_X:
-            NEG BALL_VELOCITY_X     ; BALL_VELOCITY_X = - BALL_VELOCITY_X
+        RESET_POSITION:
+            CALL RESET_BALL_POSITION
             RET
 
         NEG_VELOCITY_Y:
@@ -89,6 +91,15 @@ CODE SEGMENT PARA 'CODE'
             RET
 
     MOVE_BALL ENDP
+
+    RESET_BALL_POSITION PROC NEAR
+        MOV AX, BALL_ORIGINAL_X
+        MOV BALL_X, AX
+
+        MOV AX, BALL_ORIGINAL_Y
+        MOV BALL_Y, AX
+        RET
+    RESET_BALL_POSITION ENDP
 
     DRAW_BALL PROC NEAR 
 
